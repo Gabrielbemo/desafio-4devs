@@ -15,10 +15,7 @@ module.exports.cadastroCliente = function (app, req, res) {
 
 module.exports.cadastroClienteBanco = function (app, req, res) {
 
-
     getClientes(res, req.body);
-
-    
 
 }
 
@@ -34,9 +31,9 @@ var getClientes = function (res, body) {
 
         if (ajax.readyState == 4 && ajax.status == 200) {
             var data = ajax.responseText;
-         
+            
             var clientes = JSON.parse(data);
-            if(select(clientes,body)){
+            if(clienteExiste(clientes,body) || body.nome == "" || eNumerico(body.nome) || eCaracterEspecial(body.nome) || body.contato == "" || eNumerico(body.contato) || eCaracterEspecial(body.contato)){
                 res.render('cadastro-cliente', { alerta: true, msg: "Nome ou nome do contado ja existe" });
             }else{
                 res.render('cadastro-cliente', { alerta: true, msg: "Cadastrado com sucesso" });
@@ -47,7 +44,16 @@ var getClientes = function (res, body) {
     
 }
 
-var select = function(clientes, body){
+function eNumerico(str){
+    var regra = /[0-9]/;
+    return regra.test(str);
+}
+function eCaracterEspecial(str){
+    var regra = /[^A-Za-z0-9_]/;
+    return regra.test(str);
+}   
+
+var clienteExiste = function(clientes, body){
     for (var propt in clientes) {
 
         if (clientes[propt].nome == body.nome || clientes[propt].contato == body.contato) {
