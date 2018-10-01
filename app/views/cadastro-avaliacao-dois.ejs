@@ -1,0 +1,30 @@
+  <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <title>Cadastro Avaliações</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <h2>Cadastrar Avaliação</h2>
+  <form action="/cadastro-avaliacao" method="POST">
+    <div>
+        <label for="date">Data da Avaliação não Altere !</label>
+        <input type="text" class="form-control" value="'<%= data %>'" placeholder="'<%= data %>'" id="data" name="data">
+        <label for="sel2">Selecione 20% dos funcionarios igual a 1 </label>
+        <select multiple class="form-control" id="clientes" name="clientes">
+          <% for(var i = 0;i < clientes.length;i++){ %>
+            <option><%= clientes[i] %></option>
+          <% } %>
+        </select>
+      </div>
+    <button type="submit" class="btn btn-default">Enviar</button>
+    <script>alert('<%= clientes.length %>')</script>
+  </form>
+</div>
+
+</body>
+</html>
