@@ -8,7 +8,7 @@ module.exports.cadastroAvaliacaoDois = function (app, req, res) {
     obterClientes(res, req);
 }
 
-module.exports.efetuarCadastro = function(app, req, res){
+module.exports.efetuarCadastro = function (app, req, res) {
     postAvaliacao(req.body)
     res.render('index');
 }
@@ -21,7 +21,7 @@ var postAvaliacao = function (body) {
     ajax.setRequestHeader("Content-type", "application/json");
 
     ajax.send(JSON.stringify(body));
-    
+
 }
 
 var obterClientes = function (res, req) {
@@ -81,7 +81,7 @@ var obterAvaliacoesDoisMesesAnteriores = function (clientes, avaliacoes, res, re
                 res.render('cadastro-avaliacao-um', { alerta: true, msg: "Ja existe uma avaliação nessa data" });
             } else {
 
-                res.render('cadastro-avaliacao-dois',{clientes : obterClientesArray(clientes, obterClientesIndisponiveis1(avaliacoes, req.body), obterClientesIndisponiveis2(avaliacoes, req.body)), data: JSON.stringify(req.body)});
+                res.render('cadastro-avaliacao-dois', { clientes: obterClientesArray(clientes, obterClientesIndisponiveis1(avaliacoes, req.body), obterClientesIndisponiveis2(avaliacoes, req.body)), data: JSON.stringify(req.body) });
             }
         }
     }
@@ -100,10 +100,10 @@ var obterClientesArray = function (clientes, clientesIndisponiveis1, clientesInd
 }
 
 var clientePertence = function (clienteNome, listaClientes) {
-    if(listaClientes == null){
+    if (listaClientes == null) {
         return false;
     }
-    for (var i = 0; i < listaClientes.length;i++) {
+    for (var i = 0; i < listaClientes.length; i++) {
         if (listaClientes[i] == clienteNome) {
             return true;
         }
@@ -114,9 +114,20 @@ var clientePertence = function (clienteNome, listaClientes) {
 var obterClientesIndisponiveis1 = function (avaliacoes, valor) {
     for (var propt in avaliacoes) {
         var dataAvaliacaoAtual = avaliacoes[propt].data;
-        if (obterMesAnteriorDaData(valor) == obterMesData(dataAvaliacaoAtual)) {
-            return avaliacoes[propt].clientes;
+        if (obterMesDataAPartirNumero(valor) == "1") {
+            if (obterAnoDoBanco(dataAvaliacaoAtual) == obterAnoDaRequestAnterior1(valor)) {
+                if ("12" == obterMesData(dataAvaliacaoAtual)) {
+                    return avaliacoes[propt].clientes;
+                }
+            }
+        } else {
+            if (obterAnoDoBanco(dataAvaliacaoAtual) == obterAnoDaRequest(valor)) {
+                if (obterMesAnteriorDaData(valor) == obterMesData(dataAvaliacaoAtual)) {
+                    return avaliacoes[propt].clientes;
+                }
+            }
         }
+
     }
     return null;
 }
@@ -124,9 +135,26 @@ var obterClientesIndisponiveis1 = function (avaliacoes, valor) {
 var obterClientesIndisponiveis2 = function (avaliacoes, valor) {
     for (var propt in avaliacoes) {
         var dataAvaliacaoAtual = avaliacoes[propt].data;
-        if (obterMesAnterior2DaData(valor) == obterMesData(dataAvaliacaoAtual)) {
-            return avaliacoes[propt].clientes;
+        if (obterMesDataAPartirNumero(valor) == "2") {
+            if (obterAnoDoBanco(dataAvaliacaoAtual) == obterAnoDaRequestAnterior1(valor)) {
+                if ("12" == obterMesData(dataAvaliacaoAtual)) {
+                    return avaliacoes[propt].clientes;
+                }
+            }
+        } else  if (obterMesDataAPartirNumero(valor) == "1") {
+            if (obterAnoDoBanco(dataAvaliacaoAtual) == obterAnoDaRequestAnterior1(valor)) {
+                if ("11" == obterMesData(dataAvaliacaoAtual)) {
+                    return avaliacoes[propt].clientes;
+                }
+            }
+        } else {
+            if (obterAnoDoBanco(dataAvaliacaoAtual) == obterAnoDaRequest(valor)) {
+                if (obterMesAnterior2DaData(valor) == obterMesData(dataAvaliacaoAtual)) {
+                    return avaliacoes[propt].clientes;
+                }
+            }
         }
+
     }
     return null;
 }
@@ -136,19 +164,37 @@ var verificaAvaliacoes = function (avaliacoes, req) {
 
         var dataAvaliacaoAtual = avaliacoes[propt].data;
 
-        if (obterMesDataAPartirNumero(req.body) == obterMesData(dataAvaliacaoAtual)) {
-            return true;
+        if (obterAnoDoBanco(dataAvaliacaoAtual) == obterAnoDaRequest(req.body)) {
+            if (obterMesDataAPartirNumero(req.body) == obterMesData(dataAvaliacaoAtual)) {
+                return true;
+            }
         }
     }
     return false;
 }
+
+// Obter Ano \/
+
+var obterAnoDoBanco = function (data) {
+    return "" + parseInt(data.charAt(10) + data.charAt(11) + data.charAt(12) + data.charAt(13));
+}
+
+var obterAnoDaRequest = function (data) {
+    return "" + parseInt(JSON.stringify(data).charAt(9) + JSON.stringify(data).charAt(10) + JSON.stringify(data).charAt(11) + JSON.stringify(data).charAt(12));
+}
+
+var obterAnoDaRequestAnterior1 = function (data) {
+    return "" + parseInt(JSON.stringify(data).charAt(9) + JSON.stringify(data).charAt(10) + JSON.stringify(data).charAt(11) + JSON.stringify(data).charAt(12) - 1);
+}
+
+// Obter Mes \/
 
 var obterMesDataAPartirNumero = function (data) {
     return "" + parseInt(JSON.stringify(data).charAt(14) + JSON.stringify(data).charAt(15));
 }
 
 var obterMesData = function (data) {
-    return "" + parseInt(data.charAt(16) + data.charAt(17));
+    return "" + parseInt(data.charAt(15) + data.charAt(16));
 }
 
 var obterMesAnteriorDaData = function (data) {
