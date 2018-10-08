@@ -9,8 +9,8 @@ module.exports.cadastroAvaliacaoDois = function (app, req, res) {
 }
 
 module.exports.efetuarCadastro = function (app, req, res) {
-    postAvaliacao(req.body)
-    res.render('index');
+    postAvaliacao(req.body);
+    obterAvaliacoesRequest(res);
 }
 
 var postAvaliacao = function (body) {
@@ -59,6 +59,26 @@ var obterAvaliacoes = function (clientes, res, req) {
             var avaliacoes = JSON.parse(data);
 
             obterAvaliacoesDoisMesesAnteriores(clientes, avaliacoes, res, req)
+        }
+    }
+}
+
+var obterAvaliacoesRequest = function (res) {
+
+    var ajax = new XMLHttpRequest();
+
+    ajax.open("GET", "https://projeto-4logic.firebaseio.com/avaliacoes.json", true);
+
+    ajax.send();
+
+    ajax.onreadystatechange = function () {
+
+        if (ajax.readyState == 4 && ajax.status == 200) {
+            var data = ajax.responseText;
+
+            var avaliacoes = JSON.parse(data);
+
+            res.render('index',{dados: avaliacoes});
         }
     }
 }

@@ -10,20 +10,19 @@
 <body>
 <div class="container">
   <h2>Fazer Avaliação</h2>
+  <form action="/efetuaravaliacao" method="POST">
   <div>
     <label for="sel2">Selecione você na lista</label>
-    <select multiple class="form-control" id="sel2">
-      <option>Joao</option>
-      <option>Maria</option>
-      <option>Jorge</option>
-      <option>Marry</option>
-      <option>Pedro</option>
+    <select multiple class="form-control" id="sel2" name="cliente">
+      <% for(var i = 0;i < dados.length; i++){ %>
+      <option><%= dados[i] %></option>
+      <% } %>
     </select>
+    <input type="hidden" class="form-control" value="'<%= dataDaAvaliacao %>'" placeholder="'<%= dataDaAvaliacao %>'" id="data" name="data">
   </div>
-  <form action="#">
     <div class="form-group">
       <label for="number">Nota:</label>
-      <input type="number" class="form-control" id="number" placeholder="Coloque sua nota de 0 a 10" name="numbers">
+      <input type="number" class="form-control" id="nota" placeholder="Coloque sua nota de 0 a 10" name="nota">
     </div>
     <div class="form-group">
       <label for="text">Motivo da Nota:</label>
